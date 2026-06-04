@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurante XYZ — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0b09;
+      --panel: #151412;
+      --border: #2a2825;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dim: rgba(201,168,76,0.10);
+      --text: #f0ead8;
+      --muted: #7a7470;
+      --dim: #3a3835;
+      --green: #27ae60;
+      --red: #c0392b;
+      --blue: #2980b9;
+      --orange: #e67e22;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 40% at 80% 20%, rgba(201,168,76,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--gold);
+    }
+
+    .user-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .user-rol {
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.2);
+      color: var(--gold);
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+    }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+
+    .welcome {
+      margin-bottom: 2.5rem;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .welcome-title {
+      font-family: var(--font-display);
+      font-size: 2.2rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .welcome-title span { color: var(--gold); }
+
+    .welcome-sub {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-top: 0.4rem;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem 1.5rem;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stat-value.gold { color: var(--gold); }
+    .stat-value.green { color: var(--green); }
+    .stat-value.blue { color: var(--blue); }
+    .stat-value.orange { color: var(--orange); }
+
+    /* MÓDULOS */
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .modulos {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .modulo-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      transition: all 0.2s;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .modulo-card:hover {
+      border-color: var(--gold);
+      background: #1a1916;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+    }
+
+    .modulo-icon {
+      font-size: 2.2rem;
+      width: 60px;
+      height: 60px;
+      background: var(--gold-dim);
+      border: 1px solid rgba(201,168,76,0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modulo-info { flex: 1; }
+
+    .modulo-nombre {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+
+    .modulo-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .modulo-arrow {
+      color: var(--dim);
+      font-size: 1.2rem;
+      transition: color 0.2s, transform 0.2s;
+    }
+
+    .modulo-card:hover .modulo-arrow {
+      color: var(--gold);
+      transform: translateX(4px);
+    }
+
+    /* ACTIVIDAD RECIENTE */
+    .actividad {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .actividad-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .actividad-title {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .actividad-lista { padding: 0.5rem 0; }
+
+    .actividad-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.85rem 1.5rem;
+      border-bottom: 1px solid rgba(42,40,37,0.5);
+      font-size: 0.85rem;
+      transition: background 0.15s;
+    }
+
+    .actividad-item:last-child { border-bottom: none; }
+    .actividad-item:hover { background: rgba(255,255,255,0.02); }
+
+    .actividad-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot-green  { background: var(--green); }
+    .dot-blue   { background: var(--blue); }
+    .dot-orange { background: var(--orange); }
+    .dot-gold   { background: var(--gold); }
+
+    .actividad-texto { flex: 1; color: var(--text); }
+    .actividad-hora  { color: var(--muted); font-size: 0.78rem; }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">🍽 Restaurante XYZ</div>
+      <div class="user-bar">
+        <span id="usuario-nombre"></span>
+        <span class="user-rol" id="usuario-rol">empleado</span>
+        <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="welcome">
+      <h1 class="welcome-title">Bienvenida, <span id="nombre-bienvenida">Karen</span> 👋</h1>
+      <p class="welcome-sub" id="fecha-hoy"></p>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Mesas disponibles</div>
+        <div class="stat-value green" id="stat-mesas">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Reservas hoy</div>
+        <div class="stat-value blue" id="stat-reservas">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pedidos activos</div>
+        <div class="stat-value orange" id="stat-pedidos">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Productos en menú</div>
+        <div class="stat-value gold" id="stat-productos">—</div>
+      </div>
+    </div>
+
+    <!-- MÓDULOS -->
+    <p class="section-title">Módulos</p>
+    <div class="modulos">
+      <a href="pages/reservas.html" class="modulo-card">
+        <div class="modulo-icon">📅</div>
+        <div class="modulo-info">
+          <div class="modulo-nombre">Reservas</div>
+          <div class="modulo-desc">Gestiona las reservas de mesas y clientes</div>
+        </div>
+        <span class="modulo-arrow">→</span>
+      </a>
+
+      <a href="pages/pedidos.html" class="modulo-card">
+        <div class="modulo-icon">🧾</div>
+        <div class="modulo-info">
+          <div class="modulo-nombre">Pedidos</div>
+          <div class="modulo-desc">Crea y administra los pedidos de las mesas</div>
+        </div>
+        <span class="modulo-arrow">→</span>
+      </a>
+
+      <a href="pages/productos.html" class="modulo-card">
+        <div class="modulo-icon">🍽</div>
+        <div class="modulo-info">
+          <div class="modulo-nombre">Productos</div>
+          <div class="modulo-desc">Administra el menú, categorías y precios</div>
+        </div>
+        <span class="modulo-arrow">→</span>
+      </a>
+
+      <a href="pages/mesas.html" class="modulo-card">
+        <div class="modulo-icon">🪑</div>
+        <div class="modulo-info">
+          <div class="modulo-nombre">Mesas</div>
+          <div class="modulo-desc">Consulta y actualiza el estado de las mesas</div>
+        </div>
+        <span class="modulo-arrow">→</span>
+      </a>
+    </div>
+
+    <!-- ACTIVIDAD RECIENTE -->
+    <div class="actividad">
+      <div class="actividad-header">
+        <span class="actividad-title">Actividad reciente</span>
+      </div>
+      <div class="actividad-lista" id="actividad-lista">
+        <div class="actividad-item">
+          <div class="actividad-dot dot-green"></div>
+          <span class="actividad-texto">Mesa 1 — Reserva confirmada para Juan Pérez</span>
+          <span class="actividad-hora">19:00</span>
+        </div>
+        <div class="actividad-item">
+          <div class="actividad-dot dot-orange"></div>
+          <span class="actividad-texto">Pedido #1 — Bandeja paisa, Jugo de lulo</span>
+          <span class="actividad-hora">19:30</span>
+        </div>
+        <div class="actividad-item">
+          <div class="actividad-dot dot-blue"></div>
+          <span class="actividad-texto">Mesa 2 — Disponible</span>
+          <span class="actividad-hora">20:00</span>
+        </div>
+        <div class="actividad-item">
+          <div class="actividad-dot dot-gold"></div>
+          <span class="actividad-texto">Producto agregado — Patacones con hogao</span>
+          <span class="actividad-hora">20:15</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // karen: [Lógica dashboard]
+
+    // Verificar sesión
+    const token = localStorage.getItem('token');
+    if (!token) window.location.href = 'index.html';
+
+    // Cargar usuario
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    document.getElementById('usuario-nombre').textContent = usuario.nombre || 'karen';
+    document.getElementById('nombre-bienvenida').textContent = usuario.nombre || 'Karen';
+    document.getElementById('usuario-rol').textContent = usuario.rol || 'empleado';
+
+    // Fecha de hoy
+    const hoy = new Date();
+    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('fecha-hoy').textContent = hoy.toLocaleDateString('es-CO', opciones);
+
+    // Cargar estadísticas desde los microservicios
+    const API = {
+      reservas:  'http://localhost:8002',
+      pedidos:   'http://localhost:8004',
+      productos: 'http://localhost:8003'
+    };
+
+    const headers = { 'Authorization': `Bearer ${token}` };
+
+    async function cargarStats() {
+      try {
+        const [mesas, pedidos, productos] = await Promise.allSettled([
+          fetch(`${API.reservas}/mesas`, { headers }).then(r => r.json()),
+          fetch(`${API.pedidos}/pedidos`, { headers }).then(r => r.json()),
+          fetch(`${API.productos}/productos`, { headers }).then(r => r.json())
+        ]);
+
+        if (mesas.status === 'fulfilled') {
+          const disponibles = (mesas.value.data || []).filter(m => m.estado === 'disponible').length;
+          document.getElementById('stat-mesas').textContent = disponibles;
+        }
+
+        if (pedidos.status === 'fulfilled') {
+          const activos = (pedidos.value.data || []).filter(p =>
+            ['pendiente','en_preparacion'].includes(p.estado)
+          ).length;
+          document.getElementById('stat-pedidos').textContent = activos;
+        }
+
+        if (productos.status === 'fulfilled') {
+          document.getElementById('stat-productos').textContent =
+            (productos.value.data || []).length;
+        }
+
+        // reservas de hoy
+        const fechaHoy = hoy.toISOString().split('T')[0];
+        const res = await fetch(`${API.reservas}/reservas?fecha=${fechaHoy}`, { headers });
+        const dataRes = await res.json();
+        document.getElementById('stat-reservas').textContent = (dataRes.data || []).length;
+
+      } catch (e) {
+        console.log('Stats no disponibles aún:', e.message);
+      }
+    }
+
+    cargarStats();
+
+    function cerrarSesion() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      window.location.href = 'index.html';
+    }
+  </script>
+
+</body>
+</html>
