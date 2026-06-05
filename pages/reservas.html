@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurante XYZ — Reservas</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0c0b09;
+      --panel: #151412;
+      --border: #2a2825;
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --gold-dim: rgba(201,168,76,0.10);
+      --text: #f0ead8;
+      --muted: #7a7470;
+      --dim: #3a3835;
+      --green: #27ae60;
+      --red: #c0392b;
+      --blue: #2980b9;
+      --orange: #e67e22;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header {
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    .nav { display: flex; gap: 0.25rem; }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      padding: 0.35rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
+    .nav-link.active { color: var(--gold); background: var(--gold-dim); }
+
+    .user-bar { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--muted); }
+
+    .btn-logout {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    .main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 2rem;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .page-title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background: var(--gold);
+      color: #0c0b09;
+      border: none;
+      padding: 0.6rem 1.3rem;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold-light); }
+
+    .btn-secondary {
+      background: none;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.6rem 1.3rem;
+      border-radius: 8px;
+      font-family: var(--font-body);
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+    /* FILTROS */
+    .filtros {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .filtro {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filtro:hover { border-color: var(--gold); color: var(--text); }
+    .filtro.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
+
+    /* TABLA */
+    .tabla-wrapper {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 1rem 1.25rem;
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+
+    tbody td {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(42,40,37,0.6);
+      color: var(--text);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    .estado-badge {
+      font-size: 0.72rem;
+      padding: 0.22rem 0.7rem;
+      border-radius: 20px;
+      font-weight: 500;
+    }
+    .estado-pendiente  { background: rgba(230,126,34,0.12); color: var(--orange); border: 1px solid rgba(230,126,34,0.25); }
+    .estado-confirmada { background: rgba(39,174,96,0.12);  color: var(--green);  border: 1px solid rgba(39,174,96,0.25); }
+    .estado-cancelada  { background: rgba(192,57,43,0.12);  color: var(--red);    border: 1px solid rgba(192,57,43,0.25); }
+
+    .acciones { display: flex; gap: 0.4rem; }
+
+    .btn-tabla {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.3rem 0.7rem;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-family: var(--font-body);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-tabla:hover { border-color: var(--gold); color: var(--gold); }
+    .btn-tabla.danger:hover { border-color: var(--red); color: var(--red); }
+
+    .cargando {
+      text-align: center;
+      color: var(--muted);
+      padding: 3rem;
+      font-size: 0.9rem;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 460px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+      animation: slideUp 0.22s ease;
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      color: var(--gold);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    .modal-body {
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .label {
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.65rem 0.9rem;
+      border-radius: 7px;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+    .input:focus { border-color: var(--gold); }
+    select.input option { background: var(--panel); }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--panel);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      z-index: 300;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+    .toast.ok    { border-color: var(--green); color: var(--green); }
+    .toast.error { border-color: var(--red); color: var(--red); }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header-inner">
+      <a href="../dashboard.html" class="logo">🍽 Restaurante XYZ</a>
+      <nav class="nav">
+        <a href="mesas.html" class="nav-link">Mesas</a>
+        <a href="reservas.html" class="nav-link active">Reservas</a>
+        <a href="productos.html" class="nav-link">Productos</a>
+        <a href="pedidos.html" class="nav-link">Pedidos</a>
+      </nav>
+      <div class="user-bar">
+        <span id="usuario-nombre"></span>
+        <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <main class="main">
+    <div class="page-header">
+      <h1 class="page-title">Reservas</h1>
+      <button class="btn-primary" onclick="abrirModal()">+ Nueva reserva</button>
+    </div>
+
+    <div class="filtros">
+      <button class="filtro active" data-estado="">Todas</button>
+      <button class="filtro" data-estado="pendiente">Pendientes</button>
+      <button class="filtro" data-estado="confirmada">Confirmadas</button>
+      <button class="filtro" data-estado="cancelada">Canceladas</button>
+    </div>
+
+    <div class="tabla-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Cliente</th>
+            <th>Teléfono</th>
+            <th>Mesa</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Personas</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-body">
+          <tr><td colspan="9" class="cargando">Cargando reservas...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- MODAL -->
+  <div class="modal-overlay hidden" id="modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modal-titulo">Nueva Reserva</h3>
+        <button class="modal-close" onclick="cerrarModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="reserva-id" />
+
+        <div class="form-group full">
+          <label class="label">Nombre del cliente</label>
+          <input type="text" id="cliente-nombre" class="input" placeholder="Ej: María García" />
+        </div>
+        <div class="form-group">
+          <label class="label">Teléfono</label>
+          <input type="text" id="cliente-telefono" class="input" placeholder="3001234567" />
+        </div>
+        <div class="form-group">
+          <label class="label">Mesa</label>
+          <select id="reserva-mesa" class="input"></select>
+        </div>
+        <div class="form-group">
+          <label class="label">Fecha</label>
+          <input type="date" id="reserva-fecha" class="input" />
+        </div>
+        <div class="form-group">
+          <label class="label">Hora</label>
+          <input type="time" id="reserva-hora" class="input" />
+        </div>
+        <div class="form-group">
+          <label class="label">N° personas</label>
+          <input type="number" id="reserva-personas" class="input" min="1" placeholder="2" />
+        </div>
+        <div class="form-group full">
+          <label class="label">Estado</label>
+          <select id="reserva-estado" class="input">
+            <option value="pendiente">Pendiente</option>
+            <option value="confirmada">Confirmada</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn-primary" onclick="guardarReserva()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // karen: [Lógica módulo reservas]
+    const API        = 'http://localhost:8002';
+    const token      = localStorage.getItem('token');
+    if (!token) window.location.href = '../index.html';
+
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    document.getElementById('usuario-nombre').textContent = usuario.nombre || 'karen';
+
+    let reservas = [];
+    let mesas    = [];
+    let filtroActivo = '';
+
+    async function cargarDatos() {
+      try {
+        const [rRes, mRes] = await Promise.all([
+          fetch(`${API}/reservas`, { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API}/mesas`,    { headers: { 'Authorization': `Bearer ${token}` } })
+        ]);
+        const rData = await rRes.json();
+        const mData = await mRes.json();
+        reservas = rData.data || [];
+        mesas    = mData.data || [];
+        renderTabla();
+        cargarSelectMesas();
+      } catch (e) {
+        document.getElementById('tabla-body').innerHTML =
+          '<tr><td colspan="9" class="cargando">No se pudo conectar con el servidor.</td></tr>';
+      }
+    }
+
+    function renderTabla() {
+      const tbody = document.getElementById('tabla-body');
+      const filtradas = filtroActivo
+        ? reservas.filter(r => r.estado === filtroActivo)
+        : reservas;
+
+      if (!filtradas.length) {
+        tbody.innerHTML = '<tr><td colspan="9" class="cargando">No hay reservas registradas.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtradas.map(r => `
+        <tr>
+          <td>${r.id}</td>
+          <td>${r.cliente_nombre}</td>
+          <td>${r.cliente_telefono || '—'}</td>
+          <td>Mesa ${r.mesa_id}</td>
+          <td>${r.fecha}</td>
+          <td>${r.hora}</td>
+          <td>${r.num_personas}</td>
+          <td><span class="estado-badge estado-${r.estado}">${r.estado}</span></td>
+          <td>
+            <div class="acciones">
+              <button class="btn-tabla" onclick="editarReserva(${r.id})">Editar</button>
+              <button class="btn-tabla danger" onclick="eliminarReserva(${r.id})">Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function cargarSelectMesas() {
+      const sel = document.getElementById('reserva-mesa');
+      sel.innerHTML = mesas.map(m =>
+        `<option value="${m.id}">Mesa ${m.numero} (${m.capacidad} personas)</option>`
+      ).join('');
+    }
+
+    document.querySelectorAll('.filtro').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filtroActivo = btn.dataset.estado;
+        renderTabla();
+      });
+    });
+
+    function abrirModal(reserva = null) {
+      document.getElementById('modal-titulo').textContent = reserva ? 'Editar Reserva' : 'Nueva Reserva';
+      document.getElementById('reserva-id').value            = reserva ? reserva.id : '';
+      document.getElementById('cliente-nombre').value        = reserva ? reserva.cliente_nombre : '';
+      document.getElementById('cliente-telefono').value      = reserva ? reserva.cliente_telefono : '';
+      document.getElementById('reserva-mesa').value          = reserva ? reserva.mesa_id : '';
+      document.getElementById('reserva-fecha').value         = reserva ? reserva.fecha : '';
+      document.getElementById('reserva-hora').value          = reserva ? reserva.hora : '';
+      document.getElementById('reserva-personas').value      = reserva ? reserva.num_personas : '';
+      document.getElementById('reserva-estado').value        = reserva ? reserva.estado : 'pendiente';
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function editarReserva(id) {
+      const r = reservas.find(r => r.id === id);
+      if (r) abrirModal(r);
+    }
+
+    async function guardarReserva() {
+      const id      = document.getElementById('reserva-id').value;
+      const nombre  = document.getElementById('cliente-nombre').value.trim();
+      const tel     = document.getElementById('cliente-telefono').value.trim();
+      const mesa    = document.getElementById('reserva-mesa').value;
+      const fecha   = document.getElementById('reserva-fecha').value;
+      const hora    = document.getElementById('reserva-hora').value;
+      const personas = document.getElementById('reserva-personas').value;
+      const estado  = document.getElementById('reserva-estado').value;
+
+      if (!nombre || !mesa || !fecha || !hora || !personas) {
+        mostrarToast('Completa todos los campos obligatorios', 'error');
+        return;
+      }
+
+      const body = {
+        cliente_nombre: nombre,
+        cliente_telefono: tel,
+        mesa_id: parseInt(mesa),
+        fecha, hora,
+        num_personas: parseInt(personas),
+        estado
+      };
+
+      const url    = id ? `${API}/reservas/${id}` : `${API}/reservas`;
+      const method = id ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        });
+
+        if (res.ok) {
+          mostrarToast(id ? 'Reserva actualizada' : 'Reserva creada', 'ok');
+          cerrarModal();
+          cargarDatos();
+        } else {
+          mostrarToast('Error al guardar', 'error');
+        }
+      } catch (e) {
+        mostrarToast('Error de conexión', 'error');
+      }
+    }
+
+    async function eliminarReserva(id) {
+      if (!confirm('¿Eliminar esta reserva?')) return;
+      try {
+        const res = await fetch(`${API}/reservas/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          mostrarToast('Reserva eliminada', 'ok');
+          cargarDatos();
+        } else {
+          mostrarToast('No se pudo eliminar', 'error');
+        }
+      } catch (e) {
+        mostrarToast('Error de conexión', 'error');
+      }
+    }
+
+    function mostrarToast(msg, tipo = 'ok') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${tipo}`;
+      setTimeout(() => t.classList.add('hidden'), 3000);
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('usuario');
+      window.location.href = '../index.html';
+    }
+
+    cargarDatos();
+  </script>
+
+</body>
+</html>
