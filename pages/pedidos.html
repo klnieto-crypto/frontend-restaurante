@@ -5,435 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Restaurante XYZ — Pedidos</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0c0b09;
-      --panel: #151412;
-      --border: #2a2825;
-      --gold: #c9a84c;
-      --gold-light: #e8c97a;
-      --gold-dim: rgba(201,168,76,0.10);
-      --text: #f0ead8;
-      --muted: #7a7470;
-      --dim: #3a3835;
-      --green: #27ae60;
-      --red: #c0392b;
-      --blue: #2980b9;
-      --orange: #e67e22;
-      --font-display: 'Cormorant Garamond', Georgia, serif;
-      --font-body: 'DM Sans', sans-serif;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-body);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .header {
-      background: var(--panel);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 2rem;
-      height: 62px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .logo {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      color: var(--gold);
-      text-decoration: none;
-    }
-
-    .nav { display: flex; gap: 0.25rem; }
-
-    .nav-link {
-      color: var(--muted);
-      text-decoration: none;
-      padding: 0.35rem 0.9rem;
-      border-radius: 6px;
-      font-size: 0.88rem;
-      transition: all 0.2s;
-    }
-    .nav-link:hover { color: var(--text); background: rgba(255,255,255,0.04); }
-    .nav-link.active { color: var(--gold); background: var(--gold-dim); }
-
-    .user-bar { display: flex; align-items: center; gap: 1rem; font-size: 0.85rem; color: var(--muted); }
-
-    .btn-logout {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.3rem 0.8rem;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-family: var(--font-body);
-      transition: all 0.2s;
-    }
-    .btn-logout:hover { border-color: var(--red); color: var(--red); }
-
-    .main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: 360px 1fr;
-      max-width: 1400px;
-      width: 100%;
-      margin: 0 auto;
-      padding: 1.5rem;
-      gap: 1.5rem;
-    }
-
-    /* PANEL */
-    .panel {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .panel-title {
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      color: var(--gold);
-    }
-
-    .btn-primary {
-      background: var(--gold);
-      color: #0c0b09;
-      border: none;
-      padding: 0.5rem 1.1rem;
-      border-radius: 6px;
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-primary:hover { background: var(--gold-light); }
-
-    .btn-secondary {
-      background: none;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      padding: 0.5rem 1.1rem;
-      border-radius: 6px;
-      font-family: var(--font-body);
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
-
-    /* FILTROS */
-    .filtros {
-      display: flex;
-      gap: 0.35rem;
-      padding: 0.9rem 1rem;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .filtro {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.25rem 0.7rem;
-      border-radius: 20px;
-      font-size: 0.75rem;
-      font-family: var(--font-body);
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .filtro:hover { border-color: var(--gold); color: var(--text); }
-    .filtro.active { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
-
-    /* LISTA */
-    .lista-pedidos { flex: 1; overflow-y: auto; padding: 0.75rem; }
-
-    .pedido-card {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.1rem;
-      margin-bottom: 0.5rem;
-      cursor: pointer;
-      transition: all 0.18s;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-    }
-    .pedido-card:hover { border-color: var(--gold); background: var(--gold-dim); }
-    .pedido-card.selected { border-color: var(--gold); background: var(--gold-dim); }
-
-    .pedido-num {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      font-weight: 500;
-    }
-    .pedido-meta { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
-    .pedido-total { font-size: 0.92rem; font-weight: 500; color: var(--gold); white-space: nowrap; }
-
-    /* ESTADO BADGES */
-    .estado-badge {
-      font-size: 0.7rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 20px;
-      font-weight: 500;
-      white-space: nowrap;
-    }
-    .estado-pendiente      { background: rgba(230,126,34,0.12); color: var(--orange); border: 1px solid rgba(230,126,34,0.25); }
-    .estado-en_preparacion { background: rgba(41,128,185,0.12);  color: var(--blue);   border: 1px solid rgba(41,128,185,0.25); }
-    .estado-entregado      { background: rgba(39,174,96,0.12);   color: var(--green);  border: 1px solid rgba(39,174,96,0.25); }
-    .estado-pagado         { background: rgba(201,168,76,0.12);  color: var(--gold);   border: 1px solid rgba(201,168,76,0.25); }
-    .estado-cancelado      { background: rgba(192,57,43,0.12);   color: var(--red);    border: 1px solid rgba(192,57,43,0.25); }
-
-    /* DETALLE */
-    .detalle-vacio {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: var(--dim);
-      gap: 0.75rem;
-      font-size: 0.9rem;
-    }
-    .detalle-vacio-icon { font-size: 3rem; opacity: 0.3; }
-
-    .detalle-content {
-      padding: 1.75rem;
-      flex: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .detalle-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-
-    .detalle-titulo {
-      font-family: var(--font-display);
-      font-size: 1.6rem;
-      font-weight: 600;
-    }
-
-    .detalle-meta { font-size: 0.82rem; color: var(--muted); margin-top: 3px; }
-
-    .detalle-mesa {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 0.75rem 1rem;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-
-    .section-title {
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--dim);
-      margin-bottom: 0.75rem;
-    }
-
-    /* TABLA ITEMS */
-    .tabla-items { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-
-    .tabla-items th {
-      text-align: left;
-      color: var(--dim);
-      font-weight: 400;
-      padding: 0.4rem 0.5rem;
-      border-bottom: 1px solid var(--border);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .tabla-items td {
-      padding: 0.65rem 0.5rem;
-      border-bottom: 1px solid rgba(42,40,37,0.5);
-      color: var(--text);
-      vertical-align: middle;
-    }
-
-    .tabla-items tbody tr:last-child td { border-bottom: none; }
-
-    .btn-eliminar {
-      background: none;
-      border: none;
-      color: var(--dim);
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.2rem 0.4rem;
-      border-radius: 4px;
-      transition: color 0.2s;
-    }
-    .btn-eliminar:hover { color: var(--red); }
-
-    /* TOTALES */
-    .totales {
-      background: rgba(255,255,255,0.02);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-
-    .total-row { display: flex; justify-content: space-between; font-size: 0.88rem; color: var(--muted); }
-    .total-final { font-size: 1.1rem; font-weight: 500; color: var(--gold); padding-top: 0.5rem; border-top: 1px solid var(--border); margin-top: 0.25rem; }
-
-    /* ESTADO BUTTONS */
-    .estado-buttons { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-
-    .btn-estado {
-      background: none;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 0.35rem 0.85rem;
-      border-radius: 6px;
-      font-family: var(--font-body);
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .btn-estado:hover { border-color: var(--gold); color: var(--gold); }
-    .btn-estado.activo { background: var(--gold-dim); border-color: var(--gold); color: var(--gold); }
-
-    /* AGREGAR PRODUCTO */
-    .agregar-form { display: flex; gap: 0.5rem; align-items: center; }
-
-    .input {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.55rem 0.85rem;
-      border-radius: 6px;
-      font-family: var(--font-body);
-      font-size: 0.88rem;
-      outline: none;
-      transition: border-color 0.2s;
-      width: 100%;
-    }
-    .input:focus { border-color: var(--gold); }
-    select.input option { background: var(--panel); }
-    .input-cant { width: 80px; flex-shrink: 0; }
-
-    /* MODAL */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      z-index: 200;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      width: 420px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      animation: slideUp 0.22s ease;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .modal-header h3 { font-family: var(--font-display); font-size: 1.2rem; color: var(--gold); }
-
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .modal-close:hover { color: var(--text); }
-
-    .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
-    .label { font-size: 0.73rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
-
-    .modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.75rem;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--panel);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-size: 0.88rem;
-      z-index: 300;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    }
-    .toast.ok    { border-color: var(--green); color: var(--green); }
-    .toast.error { border-color: var(--red);   color: var(--red); }
-    .hidden { display: none !important; }
-
-    .cargando { text-align: center; color: var(--muted); padding: 2rem; font-size: 0.9rem; }
-
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-  </style>
+  <link rel="stylesheet" href="../css/style.css" />
 </head>
 <body>
 
@@ -455,15 +27,13 @@
 
   <div id="toast" class="toast hidden"></div>
 
-  <main class="main">
+  <main class="main-pedidos">
 
-    <!-- PANEL IZQUIERDO -->
     <section class="panel">
       <div class="panel-header">
         <h2 class="panel-title">Pedidos</h2>
         <button class="btn-primary" onclick="abrirModalNuevo()">+ Nuevo</button>
       </div>
-
       <div class="filtros">
         <button class="filtro active" data-estado="">Todos</button>
         <button class="filtro" data-estado="pendiente">Pendiente</button>
@@ -472,19 +42,16 @@
         <button class="filtro" data-estado="pagado">Pagado</button>
         <button class="filtro" data-estado="cancelado">Cancelado</button>
       </div>
-
       <div class="lista-pedidos" id="lista-pedidos">
         <p class="cargando">Cargando pedidos...</p>
       </div>
     </section>
 
-    <!-- PANEL DERECHO -->
     <section class="panel" id="panel-detalle">
       <div class="detalle-vacio" id="detalle-vacio">
         <span class="detalle-vacio-icon">🧾</span>
         <p>Selecciona un pedido para ver el detalle</p>
       </div>
-
       <div class="detalle-content hidden" id="detalle-content">
         <div class="detalle-header">
           <div>
@@ -493,35 +60,24 @@
           </div>
           <span class="estado-badge" id="detalle-estado-badge"></span>
         </div>
-
         <div class="detalle-mesa" id="detalle-mesa"></div>
-
         <div>
           <p class="section-title">Productos</p>
           <table class="tabla-items">
             <thead>
-              <tr>
-                <th>Producto</th>
-                <th>Cant.</th>
-                <th>Precio unit.</th>
-                <th>Subtotal</th>
-                <th></th>
-              </tr>
+              <tr><th>Producto</th><th>Cant.</th><th>Precio unit.</th><th>Subtotal</th><th></th></tr>
             </thead>
             <tbody id="tabla-detalles-body"></tbody>
           </table>
         </div>
-
         <div class="totales">
           <div class="total-row"><span>Subtotal</span><span id="detalle-subtotal">$0</span></div>
           <div class="total-row total-final"><span>Total</span><span id="detalle-total">$0</span></div>
         </div>
-
         <div>
           <p class="section-title">Cambiar estado</p>
           <div class="estado-buttons" id="estado-buttons"></div>
         </div>
-
         <div>
           <p class="section-title">Agregar producto</p>
           <div class="agregar-form">
@@ -535,7 +91,6 @@
 
   </main>
 
-  <!-- MODAL NUEVO PEDIDO -->
   <div class="modal-overlay hidden" id="modal-nuevo">
     <div class="modal">
       <div class="modal-header">
@@ -563,10 +118,11 @@
     </div>
   </div>
 
+  <script src="../js/app.js"></script>
   <script>
     // karen: [Lógica módulo pedidos]
-    const API_PEDIDOS  = 'http://localhost:8004';
-    const API_RESERVAS = 'http://localhost:8002';
+    const API_PEDIDOS   = 'http://localhost:8004';
+    const API_RESERVAS  = 'http://localhost:8002';
     const API_PRODUCTOS = 'http://localhost:8003';
     const token = localStorage.getItem('token');
     if (!token) window.location.href = '../index.html';
@@ -574,50 +130,33 @@
     const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
     document.getElementById('usuario-nombre').textContent = usuario.nombre || 'karen';
 
-    let pedidos   = [];
-    let productos = [];
-    let mesas     = [];
-    let pedidoSeleccionado = null;
-    let filtroActivo = '';
-
+    let pedidos = [], productos = [], mesas = [], pedidoSeleccionado = null, filtroActivo = '';
     const fmt = v => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(v);
 
     async function cargarDatos() {
       try {
         const [pRes, prRes, mRes] = await Promise.all([
-          fetch(`${API_PEDIDOS}/pedidos`,   { headers: { 'Authorization': `Bearer ${token}` } }),
+          fetch(`${API_PEDIDOS}/pedidos`,    { headers: { 'Authorization': `Bearer ${token}` } }),
           fetch(`${API_PRODUCTOS}/productos`, { headers: { 'Authorization': `Bearer ${token}` } }),
-          fetch(`${API_RESERVAS}/mesas`,    { headers: { 'Authorization': `Bearer ${token}` } })
+          fetch(`${API_RESERVAS}/mesas`,     { headers: { 'Authorization': `Bearer ${token}` } })
         ]);
-        const pData  = await pRes.json();
-        const prData = await prRes.json();
-        const mData  = await mRes.json();
-        pedidos   = pData.data  || [];
-        productos = prData.data || [];
-        mesas     = mData.data  || [];
+        pedidos   = (await pRes.json()).data  || [];
+        productos = (await prRes.json()).data || [];
+        mesas     = (await mRes.json()).data  || [];
         renderLista();
         cargarSelectProductos();
         cargarSelectMesas();
       } catch (e) {
-        document.getElementById('lista-pedidos').innerHTML =
-          '<p class="cargando">No se pudo conectar con el servidor.</p>';
+        document.getElementById('lista-pedidos').innerHTML = '<p class="cargando">No se pudo conectar.</p>';
       }
     }
 
     function renderLista() {
       const lista = document.getElementById('lista-pedidos');
-      const filtrados = filtroActivo
-        ? pedidos.filter(p => p.estado === filtroActivo)
-        : pedidos;
-
-      if (!filtrados.length) {
-        lista.innerHTML = '<p class="cargando">No hay pedidos.</p>';
-        return;
-      }
-
+      const filtrados = filtroActivo ? pedidos.filter(p => p.estado === filtroActivo) : pedidos;
+      if (!filtrados.length) { lista.innerHTML = '<p class="cargando">No hay pedidos.</p>'; return; }
       lista.innerHTML = filtrados.map(p => `
-        <div class="pedido-card ${pedidoSeleccionado?.id === p.id ? 'selected' : ''}"
-             onclick="seleccionarPedido(${p.id})">
+        <div class="pedido-card ${pedidoSeleccionado?.id === p.id ? 'selected' : ''}" onclick="seleccionarPedido(${p.id})">
           <div>
             <div class="pedido-num">Pedido #${p.id}</div>
             <div class="pedido-meta">Mesa ${p.mesa_id} · ${p.fecha} ${p.hora}</div>
@@ -626,68 +165,48 @@
             <span class="estado-badge estado-${p.estado}">${p.estado.replace('_',' ')}</span>
             <span class="pedido-total">${fmt(p.total)}</span>
           </div>
-        </div>
-      `).join('');
+        </div>`).join('');
     }
 
     async function seleccionarPedido(id) {
       pedidoSeleccionado = pedidos.find(p => p.id === id);
       renderLista();
-
       try {
-        const res = await fetch(`${API_PEDIDOS}/pedidos/${id}/detalles`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
+        const res  = await fetch(`${API_PEDIDOS}/pedidos/${id}/detalles`, { headers: { 'Authorization': `Bearer ${token}` } });
         const data = await res.json();
-        const detalles = data.data || [];
-        renderDetalle(pedidoSeleccionado, detalles);
-      } catch (e) {
-        renderDetalle(pedidoSeleccionado, []);
-      }
+        renderDetalle(pedidoSeleccionado, data.data || []);
+      } catch (e) { renderDetalle(pedidoSeleccionado, []); }
     }
 
     function renderDetalle(pedido, detalles) {
       document.getElementById('detalle-vacio').classList.add('hidden');
       document.getElementById('detalle-content').classList.remove('hidden');
-
       document.getElementById('detalle-titulo').textContent = `Pedido #${pedido.id}`;
       document.getElementById('detalle-meta').textContent   = `${pedido.fecha} · ${pedido.hora}`;
       document.getElementById('detalle-mesa').textContent   = `Mesa ${pedido.mesa_id}`;
-
       const badge = document.getElementById('detalle-estado-badge');
       badge.textContent = pedido.estado.replace('_', ' ');
       badge.className   = `estado-badge estado-${pedido.estado}`;
-
-      // Tabla detalles
       const tbody = document.getElementById('tabla-detalles-body');
-      if (!detalles.length) {
-        tbody.innerHTML = '<tr><td colspan="5" style="color:var(--muted);padding:1rem;text-align:center">Sin productos</td></tr>';
-      } else {
-        tbody.innerHTML = detalles.map(d => {
-          const prod = productos.find(p => p.id === d.producto_id);
-          return `
-            <tr>
-              <td>${prod ? prod.nombre : `Producto #${d.producto_id}`}</td>
+      tbody.innerHTML = !detalles.length
+        ? '<tr><td colspan="5" style="color:var(--muted);padding:1rem;text-align:center">Sin productos</td></tr>'
+        : detalles.map(d => {
+            const prod = productos.find(p => p.id === d.producto_id);
+            return `<tr>
+              <td>${prod ? prod.nombre : `#${d.producto_id}`}</td>
               <td>${d.cantidad}</td>
               <td>${fmt(d.precio_unitario)}</td>
               <td>${fmt(d.subtotal)}</td>
               <td><button class="btn-eliminar" onclick="eliminarDetalle(${d.id})">✕</button></td>
-            </tr>
-          `;
-        }).join('');
-      }
-
-      // Totales
+            </tr>`;
+          }).join('');
       const total = detalles.reduce((s, d) => s + parseFloat(d.subtotal), 0);
       document.getElementById('detalle-subtotal').textContent = fmt(total);
       document.getElementById('detalle-total').textContent    = fmt(total);
-
-      // Botones estado
-      const estados = ['pendiente', 'en_preparacion', 'entregado', 'pagado', 'cancelado'];
-      document.getElementById('estado-buttons').innerHTML = estados.map(e => `
-        <button class="btn-estado ${pedido.estado === e ? 'activo' : ''}"
-                onclick="cambiarEstado('${e}')">${e.replace('_', ' ')}</button>
-      `).join('');
+      const estados = ['pendiente','en_preparacion','entregado','pagado','cancelado'];
+      document.getElementById('estado-buttons').innerHTML = estados.map(e =>
+        `<button class="btn-estado ${pedido.estado === e ? 'activo' : ''}" onclick="cambiarEstado('${e}')">${e.replace('_',' ')}</button>`
+      ).join('');
     }
 
     async function cambiarEstado(estado) {
@@ -698,11 +217,7 @@
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
           body: JSON.stringify({ ...pedidoSeleccionado, estado })
         });
-        if (res.ok) {
-          mostrarToast('Estado actualizado', 'ok');
-          await cargarDatos();
-          seleccionarPedido(pedidoSeleccionado.id);
-        }
+        if (res.ok) { mostrarToast('Estado actualizado', 'ok'); await cargarDatos(); seleccionarPedido(pedidoSeleccionado.id); }
       } catch (e) { mostrarToast('Error de conexión', 'error'); }
     }
 
@@ -712,92 +227,57 @@
       const cantidad   = parseInt(document.getElementById('input-cantidad').value);
       const prod = productos.find(p => p.id === parseInt(productoId));
       if (!prod || cantidad < 1) { mostrarToast('Selecciona un producto válido', 'error'); return; }
-
       try {
         const res = await fetch(`${API_PEDIDOS}/pedidos/${pedidoSeleccionado.id}/detalles`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({
-            producto_id: prod.id,
-            cantidad,
-            precio_unitario: prod.precio,
-            subtotal: prod.precio * cantidad
-          })
+          body: JSON.stringify({ producto_id: prod.id, cantidad, precio_unitario: prod.precio, subtotal: prod.precio * cantidad })
         });
-        if (res.ok) {
-          mostrarToast('Producto agregado', 'ok');
-          seleccionarPedido(pedidoSeleccionado.id);
-          cargarDatos();
-        }
+        if (res.ok) { mostrarToast('Producto agregado', 'ok'); seleccionarPedido(pedidoSeleccionado.id); cargarDatos(); }
       } catch (e) { mostrarToast('Error de conexión', 'error'); }
     }
 
     async function eliminarDetalle(id) {
       if (!confirm('¿Eliminar este producto del pedido?')) return;
       try {
-        const res = await fetch(`${API_PEDIDOS}/detalles/${id}`, {
-          method: 'DELETE',
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (res.ok) {
-          mostrarToast('Producto eliminado', 'ok');
-          seleccionarPedido(pedidoSeleccionado.id);
-          cargarDatos();
-        }
+        const res = await fetch(`${API_PEDIDOS}/detalles/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+        if (res.ok) { mostrarToast('Producto eliminado', 'ok'); seleccionarPedido(pedidoSeleccionado.id); cargarDatos(); }
       } catch (e) { mostrarToast('Error de conexión', 'error'); }
     }
 
     function cargarSelectProductos() {
       document.getElementById('select-producto').innerHTML = productos.map(p =>
-        `<option value="${p.id}">${p.nombre} — ${fmt(p.precio)}</option>`
-      ).join('');
+        `<option value="${p.id}">${p.nombre} — ${fmt(p.precio)}</option>`).join('');
     }
 
     function cargarSelectMesas() {
       document.getElementById('select-mesa').innerHTML = mesas.map(m =>
-        `<option value="${m.id}">Mesa ${m.numero} (${m.capacidad} personas)</option>`
-      ).join('');
+        `<option value="${m.id}">Mesa ${m.numero} (${m.capacidad} personas)</option>`).join('');
     }
 
     function abrirModalNuevo() {
-      const hoy = new Date().toISOString().split('T')[0];
-      const hora = new Date().toTimeString().slice(0, 5);
-      document.getElementById('input-fecha').value = hoy;
-      document.getElementById('input-hora').value  = hora;
+      document.getElementById('input-fecha').value = new Date().toISOString().split('T')[0];
+      document.getElementById('input-hora').value  = new Date().toTimeString().slice(0, 5);
       document.getElementById('modal-nuevo').classList.remove('hidden');
     }
 
-    function cerrarModal() {
-      document.getElementById('modal-nuevo').classList.add('hidden');
-    }
+    function cerrarModal() { document.getElementById('modal-nuevo').classList.add('hidden'); }
 
     async function crearPedido() {
       const mesa  = document.getElementById('select-mesa').value;
       const fecha = document.getElementById('input-fecha').value;
       const hora  = document.getElementById('input-hora').value;
       if (!mesa || !fecha || !hora) { mostrarToast('Completa todos los campos', 'error'); return; }
-
       try {
         const res = await fetch(`${API_PEDIDOS}/pedidos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-          body: JSON.stringify({
-            mesa_id: parseInt(mesa),
-            usuario_id: usuario.id || 1,
-            estado: 'pendiente',
-            total: 0,
-            fecha, hora
-          })
+          body: JSON.stringify({ mesa_id: parseInt(mesa), usuario_id: usuario.id || 1, estado: 'pendiente', total: 0, fecha, hora })
         });
-        if (res.ok) {
-          mostrarToast('Pedido creado', 'ok');
-          cerrarModal();
-          cargarDatos();
-        }
+        if (res.ok) { mostrarToast('Pedido creado', 'ok'); cerrarModal(); cargarDatos(); }
       } catch (e) { mostrarToast('Error de conexión', 'error'); }
     }
 
-    // Filtros
     document.querySelectorAll('.filtro').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.filtro').forEach(b => b.classList.remove('active'));
@@ -806,19 +286,6 @@
         renderLista();
       });
     });
-
-    function mostrarToast(msg, tipo = 'ok') {
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className = `toast ${tipo}`;
-      setTimeout(() => t.classList.add('hidden'), 3000);
-    }
-
-    function cerrarSesion() {
-      localStorage.removeItem('token');
-      localStorage.removeItem('usuario');
-      window.location.href = '../index.html';
-    }
 
     cargarDatos();
   </script>
